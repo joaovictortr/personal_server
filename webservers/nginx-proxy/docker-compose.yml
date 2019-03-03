@@ -1,0 +1,17 @@
+---
+version: "3.2"
+networks:
+    default:
+        external:
+            name: main
+
+services:
+    nginx-proxy.local:
+        container_name: nginx-proxy.local
+        restart: unless-stopped
+        image: jwilder/nginx-proxy
+        ports:
+            - "80:80"
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+
