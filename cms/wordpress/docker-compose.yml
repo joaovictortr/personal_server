@@ -1,0 +1,32 @@
+---
+version: "3.2"
+
+networks:
+    default:
+        external:
+            name: main
+
+services:
+    wordpress:
+    container_name: wordpress.local
+    image: wordpress
+    restart: unless-stopped
+    environment:
+        WORDPRESS_DB_HOST: mariadb.local
+        WORDPRESS_DB_USER: wordpress
+        WORDPRESS_DB_PASSWORD: wordpress
+        WORDPRESS_DB_NAME: wordpress
+        # nginx-proxy configuration
+        VIRTUAL_HOST: wordpress.local
+        VIRTUAL_PORT: "80"
+    expose:
+        - "80"
+    ports:
+        - 80:80
+    external_links:
+        - mariadb.local
+        - nginx-proxy.local
+    volumes:
+        # Mount as volume to persist the installed plugins
+        - ./plugins:/var/www/html/wp-content/plugins/
+
