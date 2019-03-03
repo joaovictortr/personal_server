@@ -1,0 +1,53 @@
+---
+version: '3.2'
+
+networks:
+    default:
+        external:
+            name: main
+
+services:
+    firefly.local:
+        container_name: firefly.local
+        restart: unless-stopped
+        environment:
+            - FF_DB_CONNECTION=mysql
+            - FF_DB_HOST=mariadb.local
+            - FF_DB_NAME=firefly
+            - FF_DB_USER=firefly
+            - FF_DB_PASSWORD=firefly
+            # Application key used to sign sessions, generate once and keep it secret.
+            # - Can be generated using: pwgen -s 32
+            - FF_APP_KEY=HKuANvg97NYdclF3bPAo3hkpci7mF5gc
+            - FF_APP_ENV=local
+            - TZ=America/Sao_Paulo
+            - APP_LOG_LEVEL=debug
+            - APP_URL=http://firefly.local
+            - TRUSTED_PROXIES=**
+            # Host that is registered with the nginx proxy instance
+            - VIRTUAL_HOST=firefly.local
+            - VIRTUAL_PORT=80
+        image: jc5x/firefly-iii
+        external_links:
+            - mariadb.local
+            - nginx-proxy.local
+        expose:
+            - "80"
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+            -
+                source: firefly_iii_export
+                target: /var/www/firefly-iii/storage/export
+                type: volume
+            -
+                source: firefly_iii_upload
+                target: /var/www/firefly-iii/storage/upload
+                type: volume
+
+volumes:
+    firefly_iii_export:
+        external:
+            name: firefly_iii_export
+    firefly_iii_upload:
+        external:
+            name: firefly_iii_upload
