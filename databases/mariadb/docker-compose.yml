@@ -1,0 +1,28 @@
+---
+version: "3.2"
+networks:
+    default:
+        external:
+            name: main
+
+services:
+    mariadb.local:
+        container_name: mariadb.local
+        image: library/mariadb
+        restart: unless-stopped
+        environment:
+            # Generates a random password on the first execution
+            - MYSQL_RANDOM_ROOT_PASSWORD=yes
+            - TZ=America/Sao_Paulo
+        ports:
+            - "3306:3306"
+        volumes:
+            -
+                source: mariadb_data
+                target: /var/lib/mysql
+                type: volume
+
+volumes:
+    mariadb_data:
+        external:
+            name: mariadb_data
